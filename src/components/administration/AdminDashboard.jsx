@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { DollarSign, AlertCircle, FileText, Users, Download, ArrowRight } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import StatCard from '../common/StatCard';
+import { DollarSign, AlertCircle, FileText, Users, Download, Receipt, TrendingUp, TrendingDown } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency, isOverdue } from '../../utils/formatters';
 import { safeGetFromStorage } from '../../utils/storage';
 
@@ -44,20 +43,13 @@ const AdminDashboard = ({ onNavigate }) => {
   }, []);
 
   const feeData = [
-    {
-      name: 'Fee Collection',
-      Paid: stats.totalPaid,
-      Unpaid: stats.totalUnpaid,
-      Overdue: stats.overdueFees
-    }
+    { name: 'Jan', paid: 250000, unpaid: 75000 },
+    { name: 'Feb', paid: 280000, unpaid: 65000 },
+    { name: 'Mar', paid: 320000, unpaid: 55000 },
+    { name: 'Apr', paid: 290000, unpaid: 70000 },
+    { name: 'May', paid: 350000, unpaid: 45000 },
+    { name: 'Jun', paid: stats.totalPaid, unpaid: stats.totalUnpaid }
   ];
-
-  const noDueData = [
-    { name: 'Cleared', value: stats.noDueCleared },
-    { name: 'Pending', value: stats.totalStudents - stats.noDueCleared }
-  ];
-
-  const COLORS = ['#10b981', '#f59e0b'];
 
   const generateDefaulterReport = () => {
     const fees = safeGetFromStorage('fees', []);
@@ -89,175 +81,189 @@ const AdminDashboard = ({ onNavigate }) => {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Administration Dashboard</h1>
-        <p className="text-gray-600 mt-1">Overview of fees, refunds, and clearances</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-500 mt-1">Welcome back to College Admin Portal</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <StatCard
-          title="Total Fees Collected"
-          value={formatCurrency(stats.totalPaid)}
-          icon={DollarSign}
-          color="bg-green-500"
-          change="12.5"
-          trend="up"
-        />
-        <StatCard
-          title="Unpaid Fees"
-          value={formatCurrency(stats.totalUnpaid)}
-          icon={AlertCircle}
-          color="bg-red-500"
-          change="3.2"
-          trend="down"
-        />
-        <StatCard
-          title="Overdue Fees"
-          value={formatCurrency(stats.overdueFees)}
-          icon={AlertCircle}
-          color="bg-orange-500"
-        />
-        <StatCard
-          title="Total Students"
-          value={stats.totalStudents}
-          icon={Users}
-          color="bg-blue-500"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Fee Management</h2>
-            <button
-              onClick={generateDefaulterReport}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm"
-            >
-              <Download size={16} />
-              <span>Download Report</span>
-            </button>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={feeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(value) => formatCurrency(value)} />
-                <Legend />
-                <Bar dataKey="Paid" fill="#10b981" />
-                <Bar dataKey="Unpaid" fill="#ef4444" />
-                <Bar dataKey="Overdue" fill="#f59e0b" />
-              </BarChart>
-            </ResponsiveContainer>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Total Collected</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{formatCurrency(stats.totalPaid)}</p>
+              <div className="flex items-center mt-2 text-green-600 text-sm">
+                <TrendingUp size={16} className="mr-1" />
+                <span>+12.5% from last month</span>
+              </div>
+            </div>
+            <div className="p-3 bg-green-100 rounded-lg">
+              <DollarSign className="text-green-600" size={24} />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">No Due Status</h2>
-          <div className="h-64 flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={noDueData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {noDueData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+        <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-red-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Unpaid Fees</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{formatCurrency(stats.totalUnpaid)}</p>
+              <div className="flex items-center mt-2 text-red-600 text-sm">
+                <TrendingDown size={16} className="mr-1" />
+                <span>-3.2% from last month</span>
+              </div>
+            </div>
+            <div className="p-3 bg-red-100 rounded-lg">
+              <AlertCircle className="text-red-600" size={24} />
+            </div>
           </div>
-          <div className="mt-4 text-center">
-            <button
-              onClick={() => onNavigate('nodue')}
-              className="text-blue-500 hover:text-blue-600 font-medium flex items-center justify-center mx-auto"
-            >
-              View Details <ArrowRight size={16} className="ml-1" />
-            </button>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-orange-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Overdue</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{formatCurrency(stats.overdueFees)}</p>
+              <div className="flex items-center mt-2 text-orange-600 text-sm">
+                <span>Action Required</span>
+              </div>
+            </div>
+            <div className="p-3 bg-orange-100 rounded-lg">
+              <AlertCircle className="text-orange-600" size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-blue-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Total Students</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalStudents}</p>
+              <div className="flex items-center mt-2 text-blue-600 text-sm">
+                <span>Active Students</span>
+              </div>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <Users className="text-blue-600" size={24} />
+            </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Refund Applications</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-              <div>
-                <p className="text-sm text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pendingRefunds}</p>
-              </div>
-              <FileText className="text-yellow-500" size={32} />
-            </div>
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-              <div>
-                <p className="text-sm text-gray-600">Approved</p>
-                <p className="text-2xl font-bold text-green-600">{stats.approvedRefunds}</p>
-              </div>
-              <FileText className="text-green-500" size={32} />
-            </div>
-            <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
-              <div>
-                <p className="text-sm text-gray-600">Rejected</p>
-                <p className="text-2xl font-bold text-red-600">{stats.rejectedRefunds}</p>
-              </div>
-              <FileText className="text-red-500" size={32} />
-            </div>
+        <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold text-gray-900">Fee Collection Trend</h2>
+            <button
+              onClick={generateDefaulterReport}
+              className="flex items-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
+            >
+              <Download size={16} />
+              <span>Export</span>
+            </button>
           </div>
-          <button
-            onClick={() => onNavigate('refunds')}
-            className="w-full mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium"
-          >
-            Process Applications
-          </button>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={feeData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="name" stroke="#9ca3af" />
+                <YAxis stroke="#9ca3af" />
+                <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+                <Legend />
+                <Line type="monotone" dataKey="paid" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 4 }} />
+                <Line type="monotone" dataKey="unpaid" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button
-              onClick={() => onNavigate('students')}
-              className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
-            >
-              <Users className="text-blue-500 mb-2" size={24} />
-              <h3 className="font-semibold text-gray-800">All Students</h3>
-              <p className="text-sm text-gray-600">View and manage student records</p>
-            </button>
-            <button
-              onClick={() => onNavigate('drcc')}
-              className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
-            >
-              <FileText className="text-blue-500 mb-2" size={24} />
-              <h3 className="font-semibold text-gray-800">DRCC Students</h3>
-              <p className="text-sm text-gray-600">Manage caution deposit refunds</p>
-            </button>
-            <button
-              onClick={() => onNavigate('receipt')}
-              className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
-            >
-              <FileText className="text-blue-500 mb-2" size={24} />
-              <h3 className="font-semibold text-gray-800">Generate Receipt</h3>
-              <p className="text-sm text-gray-600">Create fee payment receipts</p>
-            </button>
-            <button
-              onClick={() => onNavigate('nodue')}
-              className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
-            >
-              <FileText className="text-blue-500 mb-2" size={24} />
-              <h3 className="font-semibold text-gray-800">No Due Clearances</h3>
-              <p className="text-sm text-gray-600">Track clearance status</p>
-            </button>
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-6">Quick Stats</h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+              <div>
+                <p className="text-sm text-gray-600">Pending Refunds</p>
+                <p className="text-2xl font-bold text-blue-600">{stats.pendingRefunds}</p>
+              </div>
+              <button
+                onClick={() => onNavigate('refunds')}
+                className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
+              >
+                View
+              </button>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div>
+                <p className="text-sm text-gray-600">Approved Refunds</p>
+                <p className="text-2xl font-bold text-green-600">{stats.approvedRefunds}</p>
+              </div>
+              <button
+                onClick={() => onNavigate('refunds')}
+                className="text-green-600 hover:text-green-700 font-semibold text-sm"
+              >
+                View
+              </button>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+              <div>
+                <p className="text-sm text-gray-600">No Due Cleared</p>
+                <p className="text-2xl font-bold text-red-600">{stats.noDueCleared}</p>
+              </div>
+              <button
+                onClick={() => onNavigate('nodue')}
+                className="text-red-600 hover:text-red-700 font-semibold text-sm"
+              >
+                View
+              </button>
+            </div>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h2 className="text-lg font-bold text-gray-900 mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <button
+            onClick={() => onNavigate('students')}
+            className="flex flex-col items-center justify-center p-6 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+          >
+            <Users className="text-blue-600 mb-3" size={28} />
+            <span className="font-semibold text-gray-900 text-sm">All Students</span>
+            <span className="text-gray-500 text-xs mt-1">Manage records</span>
+          </button>
+          <button
+            onClick={() => onNavigate('drcc')}
+            className="flex flex-col items-center justify-center p-6 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+          >
+            <FileText className="text-blue-600 mb-3" size={28} />
+            <span className="font-semibold text-gray-900 text-sm">DRCC Students</span>
+            <span className="text-gray-500 text-xs mt-1">Refund applications</span>
+          </button>
+          <button
+            onClick={() => onNavigate('refunds')}
+            className="flex flex-col items-center justify-center p-6 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+          >
+            <FileText className="text-blue-600 mb-3" size={28} />
+            <span className="font-semibold text-gray-900 text-sm">Refunds</span>
+            <span className="text-gray-500 text-xs mt-1">Process applications</span>
+          </button>
+          <button
+            onClick={() => onNavigate('receipt')}
+            className="flex flex-col items-center justify-center p-6 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+          >
+            <Receipt className="text-blue-600 mb-3" size={28} />
+            <span className="font-semibold text-gray-900 text-sm">Generate Receipt</span>
+            <span className="text-gray-500 text-xs mt-1">Create receipts</span>
+          </button>
+          <button
+            onClick={() => onNavigate('nodue')}
+            className="flex flex-col items-center justify-center p-6 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+          >
+            <FileText className="text-blue-600 mb-3" size={28} />
+            <span className="font-semibold text-gray-900 text-sm">No Due</span>
+            <span className="text-gray-500 text-xs mt-1">Clearances</span>
+          </button>
         </div>
       </div>
     </div>
