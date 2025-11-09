@@ -71,9 +71,9 @@ const FeeReceiptGenerator = () => {
     const doc = new jsPDF();
 
     doc.setFontSize(22);
-    doc.text('COLLEGE NAME', 105, 20, { align: 'center' });
+    doc.text('MIMIT MALOUT', 105, 20, { align: 'center' });
     doc.setFontSize(10);
-    doc.text('College Address, City, State - PIN', 105, 28, { align: 'center' });
+    doc.text('MIMIT MALOUT Address, City, State - PIN', 105, 28, { align: 'center' });
 
     doc.setLineWidth(0.5);
     doc.line(20, 35, 190, 35);
@@ -365,8 +365,8 @@ const FeeReceiptGenerator = () => {
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50">
             <div className="bg-white p-8 shadow-lg">
               <div className="text-center border-b-2 border-gray-300 pb-4 mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">COLLEGE NAME</h1>
-                <p className="text-sm text-gray-600">College Address, City, State - PIN</p>
+                <h1 className="text-2xl font-bold text-gray-800">MIMIT MALOUT</h1>
+                <p className="text-sm text-gray-600">MIMIT MALOUT Address, City, State - PIN</p>
               </div>
 
               <h2 className="text-xl font-bold text-center text-gray-800 mb-6">FEE RECEIPT</h2>

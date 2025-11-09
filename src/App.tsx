@@ -56,7 +56,7 @@ function App() {
             {sidebarOpen && (
               <div>
                 <h1 className="text-xl font-bold text-gray-800">Admin Portal</h1>
-                <p className="text-xs text-gray-600">College Management</p>
+                <p className="text-xs text-gray-600">MIMIT MALOUT Management</p>
               </div>
             )}
             <button
@@ -96,7 +96,7 @@ function App() {
         <div className="p-4 border-t">
           {sidebarOpen && (
             <div className="text-center">
-              <p className="text-xs text-gray-500">College Management System</p>
+              <p className="text-xs text-gray-500">MIMIT MALOUT Management System</p>
               <p className="text-xs text-gray-400">v1.0.0</p>
             </div>
           )}
